@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoltBump — Energy from the Road</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --yellow: #F5E642;
+    --yellow-dark: #C8BB1A;
+    --black: #111111;
+    --asphalt: #1E1E1E;
+    --cement: #2E2E2E;
+    --gray: #555555;
+    --light: #F0F0F0;
+    --white: #FFFFFF;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--light);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 5%;
+    background: rgba(17,17,17,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  .logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--yellow);
+    text-decoration: none;
+  }
+
+  .logo span { color: var(--white); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--yellow); }
+
+  .nav-cta {
+    background: var(--yellow);
+    color: var(--black) !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 600 !important;
+  }
+
+  .nav-cta:hover { background: var(--yellow-dark); color: var(--black) !important; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 5% 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .road-bg {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30%;
+    background: repeating-linear-gradient(
+      90deg,
+      #1A1A1A 0px,
+      #1A1A1A 60px,
+      #2A2A2A 60px,
+      #2A2A2A 62px
+    );
+    opacity: 0.6;
+  }
+
+  .road-stripe {
+    position: absolute;
+    bottom: 12%;
+    left: 0; right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--yellow) 0px, var(--yellow) 40px,
+      transparent 40px, transparent 80px
+    );
+    opacity: 0.5;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--yellow);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: #888;
+    max-width: 540px;
+    margin: 0 auto 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-sub strong { color: var(--light); font-weight: 500; }
+
+  .btn-primary {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--black);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.9rem 2.4rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); }
+
+  .btn-ghost {
+    display: inline-block;
+    color: var(--light);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    border: 1px solid #444;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-left: 1rem;
+    transition: border-color 0.2s, color 0.2s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-ghost:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  /* ANIMATION SECTION */
+  #animacion {
+    padding: 5rem 5%;
+    background: var(--asphalt);
+    text-align: center;
+    border-top: 2px solid #2a2a2a;
+    border-bottom: 2px solid #2a2a2a;
+  }
+
+  .section-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 0.8rem;
+  }
+
+  h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.01em;
+  }
+
+  .section-desc {
+    color: #777;
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    font-size: 0.95rem;
+  }
+
+  /* ROAD ANIMATION */
+  .road-scene {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .road-svg-wrap { position: relative; }
+
+  /* STATS */
+  #stats {
+    padding: 5rem 5%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: #222;
+  }
+
+  .stat-card {
+    background: var(--black);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--yellow);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #666;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* HOW IT WORKS */
+  #como-funciona {
+    padding: 6rem 5%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  #como-funciona .header { text-align: center; margin-bottom: 4rem; }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+  }
+
+  .step {
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 2rem;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .step:hover { border-color: var(--yellow); }
+
+  .step-icon {
+    width: 52px;
+    height: 52px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+
+  .step-icon svg { width: 26px; height: 26px; }
+
+  .step h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+
+  .step p { font-size: 0.9rem; color: #777; line-height: 1.7; }
+
+  .step-num {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #222;
+    line-height: 1;
+  }
+
+  /* USOS */
+  #usos {
+    padding: 6rem 5%;
+    background: var(--asphalt);
+  }
+
+  #usos .inner { max-width: 1100px; margin: 0 auto; }
+  #usos .header { text-align: center; margin-bottom: 4rem; }
+
+  .uso-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .uso-card {
+    background: var(--cement);
+    border-radius: 8px;
+    padding: 1.8rem;
+    border: 1px solid #3a3a3a;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .uso-card:hover { background: #363636; border-color: #555; }
+
+  .uso-card .tag {
+    display: inline-block;
+    background: rgba(245, 230, 66, 0.12);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.7rem;
+    border-radius: 3px;
+    margin-bottom: 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+  }
+
+  .uso-card h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .uso-card p { font-size: 0.88rem; color: #888; line-height: 1.6; }
+
+  /* IMPACTO */
+  #impacto {
+    padding: 6rem 5%;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .impact-bar-wrap { margin: 3rem 0; }
+
+  .impact-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    text-align: left;
+  }
+
+  .impact-row-label {
+    font-size: 0.85rem;
+    color: #888;
+    min-width: 180px;
+    text-align: right;
+  }
+
+  .impact-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #222;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .impact-bar {
+    height: 100%;
+    background: var(--yellow);
+    border-radius: 4px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s cubic-bezier(.22,1,.36,1);
+  }
+
+  .impact-bar.animate { transform: scaleX(1); }
+
+  .impact-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--yellow);
+    min-width: 60px;
+  }
+
+  /* CTA FINAL */
+  #contacto {
+    padding: 6rem 5%;
+    background: var(--asphalt);
+    text-align: center;
+    border-top: 2px solid #2a2a2a;
+  }
+
+  #contacto h2 { margin-bottom: 1rem; }
+  #contacto p { color: #777; max-width: 480px; margin: 0 auto 2.5rem; }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    max-width: 480px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    min-width: 220px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 0.85rem 1.2rem;
+    color: var(--light);
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]:focus { border-color: var(--yellow); }
+  input[type="email"]::placeholder { color: #555; }
+
+  /* FOOTER */
+  footer {
+    padding: 2.5rem 5%;
+    border-top: 1px solid #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  footer .logo { font-size: 1.2rem; }
+
+  footer p { font-size: 0.8rem; color: #555; }
+
+  /* PULSE ANIMATION */
+  @keyframes pulse-out {
+    0% { r: 8; opacity: 1; }
+    100% { r: 40; opacity: 0; }
+  }
+
+  @keyframes car-drive {
+    0% { transform: translateX(-120px); }
+    100% { transform: translateX(780px); }
+  }
+
+  @keyframes bump-compress {
+    0%, 100% { d: path("M 120 230 Q 190 225 260 230"); }
+    50% { d: path("M 120 235 Q 190 238 260 235"); }
+  }
+
+  @keyframes bolt-flash {
+    0%, 100% { opacity: 0; transform: scale(0.7); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.9; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Volt<span>Bump</span></a>
+  <ul>
+    <li><a href="#como-funciona">How It Works</a></li>
+    <li><a href="#usos">Applications</a></li>
+    <li><a href="#impacto">Impact</a></li>
+    <li><a href="#contacto" class="nav-cta">Contact Us</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="road-bg"></div>
+  <div class="road-stripe"></div>
+  <p class="hero-eyebrow">Urban Piezoelectric Infrastructure</p>
+  <h1>Every brake<em>generates power</em></h1>
+  <p class="hero-sub">
+    We install smart speed bumps on city roads that <strong>convert vehicle weight into clean electricity</strong>, with no changes to existing infrastructure.
+  </p>
+  <div>
+    <a href="#contacto" class="btn-primary">Learn More</a>
+    <a href="#como-funciona" class="btn-ghost">See How It Works</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stat-card">
+    <div class="stat-num">50W</div>
+    <div class="stat-label">per vehicle · per pass</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">24/7</div>
+    <div class="stat-label">continuous generation</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">0 CO₂</div>
+    <div class="stat-label">direct emissions</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">15 years</div>
+    <div class="stat-label">system lifespan</div>
+  </div>
+</section>
+
+<!-- ANIMACIÓN -->
+<section id="animacion">
+  <p class="section-label">The Mechanism</p>
+  <h2>The road works for you</h2>
+  <p class="section-desc">Every passing vehicle compresses piezoelectric crystals and generates an electric pulse captured in real time.</p>
+
+  <div class="road-scene">
+    <svg id="road-anim" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;">
+      <!-- Road surface -->
+      <rect x="0" y="220" width="700" height="80" fill="#1C1C1C"/>
+      <rect x="0" y="218" width="700" height="4" fill="#2A2A2A"/>
+
+      <!-- Road markings -->
+      <rect x="0" y="258" width="80" height="4" fill="#555" rx="2"/>
+      <rect x="120" y="258" width="80" height="4" fill="#555" rx="2"/>
+      <rect x="240" y="258" width="80" height="4" fill="#555" rx="2"/>
+      <rect x="360" y="258" width="80" height="4" fill="#555" rx="2"/>
+      <rect x="480" y="258" width="80" height="4" fill="#555" rx="2"/>
+      <rect x="600" y="258" width="80" height="4" fill="#555" rx="2"/>
+
+      <!-- Speed bump -->
+      <ellipse cx="350" cy="219" rx="60" ry="7" fill="#333" stroke="#444" stroke-width="1"/>
+      <ellipse cx="350" cy="218" rx="55" ry="5" fill="#3A3A3A"/>
+      <text x="350" y="217" text-anchor="middle" font-family="Rajdhani,sans-serif" font-size="9" fill="#F5E642" letter-spacing="1">VOLTBUMP</text>
+
+      <!-- Ground wire -->
+      <line x1="350" y1="226" x2="350" y2="280" stroke="#F5E642" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
+      <rect x="335" y="280" width="30" height="10" rx="3" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+      <text x="350" y="288" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#666">BATTERY</text>
+
+      <!-- Energy pulses (hidden initially) -->
+      <circle id="pulse1" cx="350" cy="218" r="8" fill="none" stroke="#F5E642" stroke-width="2" opacity="0"/>
+      <circle id="pulse2" cx="350" cy="218" r="8" fill="none" stroke="#F5E642" stroke-width="1.5" opacity="0"/>
+
+      <!-- Bolt icon -->
+      <g id="bolt" opacity="0" transform="translate(370, 180)">
+        <polygon points="12,0 4,14 10,14 4,28 16,10 9,10" fill="#F5E642"/>
+        <text x="22" y="18" font-family="Rajdhani,sans-serif" font-size="10" fill="#F5E642" font-weight="700">POWER!</text>
+      </g>
+
+      <!-- Car group (animated) -->
+      <g id="car">
+        <rect x="-100" y="185" width="80" height="32" rx="5" fill="#333"/>
+        <rect x="-94" y="176" width="52" height="20" rx="4" fill="#3a3a3a"/>
+        <!-- windows -->
+        <rect x="-90" y="179" width="20" height="14" rx="2" fill="#1a3a5c" opacity="0.8"/>
+        <rect x="-66" y="179" width="20" height="14" rx="2" fill="#1a3a5c" opacity="0.8"/>
+        <!-- wheels -->
+        <circle cx="-88" cy="217" r="7" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+        <circle cx="-34" cy="217" r="7" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+        <circle cx="-88" cy="217" r="3" fill="#333"/>
+        <circle cx="-34" cy="217" r="3" fill="#333"/>
+        <!-- headlight -->
+        <rect x="-23" y="193" width="5" height="8" rx="2" fill="#F5E642" opacity="0.9"/>
+      </g>
+
+      <!-- Labels -->
+      <text x="350" y="215" text-anchor="middle" font-family="Rajdhani,sans-serif" font-size="0" fill="transparent">Piezoelectric speed bump</text>
+    </svg>
+
+    <div style="margin-top:1rem;">
+      <button id="btn-play" onclick="startAnimation()" style="background:var(--yellow);color:#111;border:none;padding:0.7rem 2rem;border-radius:4px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">
+        ▶ PLAY ANIMATION
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="header">
+    <p class="section-label">Technology</p>
+    <h2>How It Works</h2>
+    <p class="section-desc">Four simple steps, from the road to the power grid.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 26 26" fill="none" stroke="#F5E642" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="14" width="20" height="8" rx="2"/>
+          <path d="M7 14 V10 Q13 6 19 10 V14"/>
+        </svg>
+      </div>
+      <h3>Vehicle passes over</h3>
+      <p>The vehicle weight (1 to 40 tons) compresses the VoltBump module embedded in the pavement.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 26 26" fill="none" stroke="#F5E642" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13,3 16,10 23,10 17,15 19,22 13,18 7,22 9,15 3,10 10,10"/>
+        </svg>
+      </div>
+      <h3>Piezoelectric effect</h3>
+      <p>Piezoelectric crystals inside the module convert mechanical pressure into pulses of electrical current.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 26 26" fill="none" stroke="#F5E642" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="8" width="18" height="12" rx="2"/>
+          <path d="M9 8 V5 M17 8 V5"/>
+          <path d="M8 14 L11 11 L14 15 L17 12"/>
+        </svg>
+      </div>
+      <h3>Energy storage</h3>
+      <p>An electronic controller rectifies and stores energy in batteries or ultracapacitors integrated into the system.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 26 26" fill="none" stroke="#F5E642" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="13" cy="13" r="9"/>
+          <path d="M13 4 V8 M13 18 V22 M4 13 H8 M18 13 H22"/>
+          <circle cx="13" cy="13" r="3"/>
+        </svg>
+      </div>
+      <h3>Distribution</h3>
+      <p>Energy powers LED street lighting, security cameras, road signs, or feeds back into the urban grid.</p>
+    </div>
+  </div>
+</section>
+
+<!-- USOS -->
+<section id="usos">
+  <div class="inner">
+    <div class="header">
+      <p class="section-label">Applications</p>
+      <h2>Where can it be installed?</h2>
+      <p class="section-desc">Any road with steady traffic is a potential energy source.</p>
+    </div>
+    <div class="uso-grid">
+      <div class="uso-card">
+        <div class="tag">High traffic</div>
+        <h3>Parking lots</h3>
+        <p>Shopping center and airport entrances with hundreds of vehicles daily. Ideal for self-financing LED lighting.</p>
+      </div>
+      <div class="uso-card">
+        <div class="tag">School zones</div>
+        <h3>In front of schools</h3>
+        <p>The mandatory speed bumps already required generate electricity for traffic lights and signs in school zones.</p>
+      </div>
+      <div class="uso-card">
+        <div class="tag">Infrastructure</div>
+        <h3>Toll booths</h3>
+        <p>Thousands of heavy vehicles daily — one of the most profitable locations for large-scale piezoelectric generation.</p>
+      </div>
+      <div class="uso-card">
+        <div class="tag">Municipalities</div>
+        <h3>Residential streets</h3>
+        <p>Replaces conventional speed bumps with no extra construction. Powers neighborhood streetlights and security cameras.</p>
+      </div>
+      <div class="uso-card">
+        <div class="tag">Industry</div>
+        <h3>Industrial parks</h3>
+        <p>Freight truck traffic generates substantial energy to power warehouse lighting and entry points.</p>
+      </div>
+      <div class="uso-card">
+        <div class="tag">Smart city</div>
+        <h3>Main avenues</h3>
+        <p>Integration with urban management systems: real-time traffic data and energy for EV charging stations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACTO -->
+<section id="impacto">
+  <p class="section-label">Impact</p>
+  <h2>The potential is enormous</h2>
+  <p class="section-desc" style="margin:0 auto 1rem;">A single VoltBump module on an avenue with 10,000 daily vehicles can permanently power up to 12 LED streetlights.</p>
+
+  <div class="impact-bar-wrap" id="bars">
+    <div class="impact-row">
+      <span class="impact-row-label">Energy generated / day</span>
+      <div class="impact-bar-bg"><div class="impact-bar" style="--w:0.82" data-w="0.82"></div></div>
+      <span class="impact-val">~500 Wh</span>
+    </div>
+    <div class="impact-row">
+      <span class="impact-row-label">Electricity cost reduction</span>
+      <div class="impact-bar-bg"><div class="impact-bar" style="--w:0.65" data-w="0.65"></div></div>
+      <span class="impact-val">up to 65%</span>
+    </div>
+    <div class="impact-row">
+      <span class="impact-row-label">Return on investment</span>
+      <div class="impact-bar-bg"><div class="impact-bar" style="--w:0.50" data-w="0.50"></div></div>
+      <span class="impact-val">3–4 years</span>
+    </div>
+    <div class="impact-row">
+      <span class="impact-row-label">CO2 reduction vs grid</span>
+      <div class="impact-bar-bg"><div class="impact-bar" style="--w:0.90" data-w="0.90"></div></div>
+      <span class="impact-val">~90%</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contacto">
+  <p class="section-label">Contact</p>
+  <h2>Want to install it in your city?</h2>
+  <p>Write to us and a VoltBump engineer will assess your location's energy potential for free.</p>
+  <div class="form-row">
+    <input type="email" placeholder="your@email.com" id="email-input">
+    <button class="btn-primary" onclick="handleSubmit()">SEND</button>
+  </div>
+  <p id="form-msg" style="color:#F5E642;margin-top:1rem;font-family:'Rajdhani',sans-serif;font-size:1rem;min-height:1.5rem;"></p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo">Volt<span>Bump</span></a>
+  <p>© 2025 VoltBump. Energy from the road.</p>
+  <p style="color:#444;">The city works for you.</p>
+</footer>
+
+<script>
+  // Intersection observer for bars
+  const bars = document.querySelectorAll('.impact-bar');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        bars.forEach(b => {
+          const w = parseFloat(b.getAttribute('data-w'));
+          b.style.width = (w * 100) + '%';
+          b.classList.add('animate');
+        });
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const barsSection = document.getElementById('bars');
+  if (barsSection) observer.observe(barsSection);
+
+  // Car animation
+  let animRunning = false;
+  function startAnimation() {
+    if (animRunning) return;
+    animRunning = true;
+    const btn = document.getElementById('btn-play');
+    btn.disabled = true;
+    btn.textContent = '⚡ GENERATING...';
+
+    const car = document.getElementById('car');
+    const pulse1 = document.getElementById('pulse1');
+    const pulse2 = document.getElementById('pulse2');
+    const bolt = document.getElementById('bolt');
+
+    let startTime = null;
+    const duration = 3200;
+    const bumpX = 350;
+
+    function easeInOut(t) {
+      return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    }
+
+    function animate(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = easeInOut(progress);
+      const x = -120 + ease * 850;
+
+      car.setAttribute('transform', `translate(${x}, 0)`);
+
+      // When car is near bump
+      const carFront = x + 57;
+      const nearBump = Math.abs(carFront - bumpX) < 60;
+      const overBump = Math.abs(carFront - bumpX) < 20;
+
+      if (overBump) {
+        // Animate pulses
+        const t = (Date.now() % 600) / 600;
+        pulse1.setAttribute('r', 8 + t * 40);
+        pulse1.setAttribute('opacity', 1 - t);
+        pulse2.setAttribute('r', 8 + ((t + 0.4) % 1) * 40);
+        pulse2.setAttribute('opacity', 1 - ((t + 0.4) % 1));
+        bolt.setAttribute('opacity', Math.sin(Date.now() / 120) * 0.5 + 0.5);
+      } else {
+        pulse1.setAttribute('opacity', 0);
+        pulse2.setAttribute('opacity', 0);
+        bolt.setAttribute('opacity', 0);
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        animRunning = false;
+        btn.disabled = false;
+        btn.textContent = '▶ PLAY ANIMATION';
+        pulse1.setAttribute('opacity', 0);
+        pulse2.setAttribute('opacity', 0);
+        bolt.setAttribute('opacity', 0);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // Form
+  function handleSubmit() {
+    const email = document.getElementById('email-input').value;
+    const msg = document.getElementById('form-msg');
+    if (!email || !email.includes('@')) {
+      msg.textContent = 'Please enter a valid email address.';
+      msg.style.color = '#e24b4a';
+      return;
+    }
+    msg.textContent = 'Thank you! We will be in touch soon.';
+    msg.style.color = '#F5E642';
+    document.getElementById('email-input').value = '';
+  }
+</script>
+</body>
+</html>
